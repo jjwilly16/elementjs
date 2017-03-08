@@ -1,0 +1,26 @@
+{
+  "name": "jselement",
+  "version": "1.0.0",
+  "description": "Build and interact with html elements easily with javascript.",
+  "main": "./src/jselement.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "jsdoc -c conf.json"
+  },
+  "keywords": [
+  ],
+  "author": "Justin Williamson <jwilliamson@ibidata.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babelrc-rollup": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-connect": "^5.0.0",
+    "gulp-uglify": "^2.0.0",
+    "jsdoc": "^3.4.3",
+    "rollup": "^0.36.3",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-uglify": "^1.0.1"
+  }
+}
