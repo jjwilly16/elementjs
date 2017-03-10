@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global.elementjs = factory());
+  (global.element = factory());
 }(this, (function () { 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -133,35 +133,30 @@ var El = function () {
         if (El.isArray(attrs)) children = attrs;
 
         /**
-         * Element attributes to set.
          * @member
          * @type {Object}
          */
         this.attributes = El.isObject(attrs) ? attrs : {};
 
         /**
-         * Element type.
          * @member
          * @type {String}
          */
-        this.type = this._parseType(type);
+        this.type = type.split('.')[0].split('#')[0];
 
         /**
-         * Event handlers to attach.
          * @member
          * @type {Array}
          */
         this.events = [];
 
         /**
-         * The HTML element.
          * @member
-         * @type {Object} DOM node.
+         * @type {Object}
          */
         this.element = this._createElement();
 
         /**
-         * Element children.
          * @member
          * @type {Array}
          */
@@ -169,6 +164,8 @@ var El = function () {
 
         // SET ATTRIBUTES
         this._setAttributes();
+
+        this._parseType(type);
 
         return this;
     }
@@ -186,15 +183,8 @@ var El = function () {
             var matches = type.match(matchPattern);
             var elementType = matches.shift();
             for (var i = 0; i < matches.length; i++) {
-                // if (matches[i].indexOf('#') > -1) this.setAttribute('id', matches[i].slice(1));
-                if (matches[i].indexOf('#') > -1) this.attributes.id = matches[i].slice(1);
-                // if (matches[i].indexOf('.') > -1) this.addClass(matches[i].slice(1));
-                if (matches[i].indexOf('.') > -1) {
-                    if (!this.attributes.class) this.attributes.class = '';
-                    this.attributes.class += matches[i].slice(1) + ',';
-
-                    // this.addClass(matches[i].slice(1));
-                }
+                if (matches[i].indexOf('#') > -1) this.setAttribute('id', matches[i].slice(1));
+                if (matches[i].indexOf('.') > -1) this.addClass(matches[i].slice(1));
             }
             return elementType;
         }
@@ -240,11 +230,15 @@ var El = function () {
     }, {
         key: '_setChildren',
         value: function _setChildren(children) {
-            console.log(children);
+
+            var tracker = {};
+
             for (var i = 0; i < children.length; i++) {
                 var child = children[i];
                 this.append(child);
-                this['child' + i] = child;
+                if (!tracker[child.type]) tracker[child.type] = [];
+                tracker[child.type].push(child.type);
+                this['' + child.type + (tracker[child.type].length - 1)] = child;
             }
         }
 

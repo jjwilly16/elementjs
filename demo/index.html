@@ -11,19 +11,25 @@
 
     <form class="myform" name="myform"></form>
 
-    <script src="elementjs.js"></script>
+    <script src="element.js"></script>
     <script src="//localhost:35729/livereload.js"></script>
 
     <script>
 
-        window.el = new El('div.hello.goodbye#myid', {}, [
-            new El('ul', {}, [
-                new El('li', {}),
-                new El('li', {}),
+        window.el = new El('div#myid', [
+            new El('h1').setText('My List'),
+            new El('ul', [
+                new El('li').setText('Item 1'),
+                new El('li').setText('Item 2'),
             ]),
         ]);
 
         document.body.appendChild(window.el.element);
+
+        // setTimeout(function () {
+        //     el.
+        // })
+        console.log(el);
 
         // window.el = new El('div', {
         //     class: 'col-md-6 col-md-offset-3',

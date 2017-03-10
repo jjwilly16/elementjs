@@ -38,33 +38,33 @@ gulp.task('demo', () => {
 // ==========================================================
 gulp.task('js-dev', () =>
     rollup({
-        entry: 'src/elementjs.js',
+        entry: 'src/element.js',
         plugins: [
             babel(babelrc()),
         ],
-        dest: 'dist/elementjs.js',
+        dest: 'dist/element.js',
     }).then(bundle =>
         bundle.write({
             format: 'umd',
-            moduleName: 'elementjs',
-            dest: 'dist/elementjs.js',
+            moduleName: 'element',
+            dest: 'dist/element.js',
         })
     )
 );
 
 gulp.task('js-production', () =>
     rollup({
-        entry: 'src/elementjs.js',
+        entry: 'src/element.js',
         plugins: [
             babel(babelrc()),
             uglify(),
         ],
-        dest: 'dist/elementjs.js',
+        dest: 'dist/element.js',
     }).then(bundle =>
         bundle.write({
             format: 'umd',
-            moduleName: 'elementjs',
-            dest: 'dist/elementjs.min.js',
+            moduleName: 'element',
+            dest: 'dist/element.min.js',
         })
     )
 );

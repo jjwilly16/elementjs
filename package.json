@@ -1,8 +1,8 @@
 {
-  "name": "jselement",
+  "name": "elementjs",
   "version": "1.0.0",
   "description": "Build and interact with html elements easily with javascript.",
-  "main": "./src/jselement.js",
+  "main": "./src/element.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "docs": "jsdoc -c conf.json"
