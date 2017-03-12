@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Index</title>
+	<title>Documentation Classes</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -65,12 +65,31 @@
 		<div id="main">
 
 
+	<h1 class="page-title">Classes</h1>
+<section>
+
+<header>
+
+        <h2>
+
+        </h2>
+
+
+</header>
+
+
+<article>
+    <div class="container-overview">
+
+
+
+
+<dl class="details">
 
 
 
 
 
-    <h3>elementjs 1.0.0</h3>
 
 
 
@@ -87,39 +106,54 @@
 
 
 
-    <section class="readme-section">
-        <article><h1>elementjs</h1><p>Create and interact with HTML elements easily with javascript.</p>
-<p>Elementjs is simply a wrapper for html elements that includes convenient methods to interact with them, as well as an easy way to access them without using selectors.</p>
-<p>Each El object holds all of it's children, which can be accessed easily by traversing the object.</p>
-<h2>Installation</h2><p>NPM</p>
-<pre class="prettyprint source lang-cmd"><code>npm install --save elementjs</code></pre><p>Dist</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;dist/element.min.js&quot;>&lt;/script></code></pre><h2>Usage</h2><p>Simple</p>
-<pre class="prettyprint source lang-javascript"><code>const mydiv = new El('div');
-
-document.getElementsByTagName('body')[0].append('mydiv');</code></pre><p>Set ids/classes</p>
-<pre class="prettyprint source lang-javascript"><code>const mydiv = new El('div#myid.myclass');
-
-document.getElementsByTagName('body')[0].append('mydiv');</code></pre><p>Set text and attributes</p>
-<pre class="prettyprint source lang-javascript"><code>const mydiv = new El('div#myid.myclass', {
-    myattribute: 'myattributevalue',
-}).setText('My text');
-
-document.getElementsByTagName('body')[0].append('mydiv');</code></pre><p>Set children elements</p>
-<pre class="prettyprint source lang-javascript"><code>const mydiv = new El('div#mydiv', {
-    myattribute: 'myattributevalue',
-}, [
-    new El('ul', [
-        new El('li').setText('List item 1'),
-        new El('li').setText('List item 2'),
-        new El('li').setText('List item 3'),
-    ]),
-]);</code></pre><p>Object traversal</p>
-<p>Child elements are accessible through their parents by traversing the created object.</p>
-<pre class="prettyprint source lang-javascript"><code>mydiv</code></pre><h2>API</h2></article>
-    </section>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+</dl>
+
+
+
+
+    </div>
+
+
+
+
+
+
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="El.html">El</a></dt>
+            <dd></dd>
+        </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+</section>
 
 
 

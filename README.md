@@ -50,6 +50,24 @@ document.getElementsByTagName('body')[0].append('mydiv');
 
 Set children elements
 
+```javascript
+const mydiv = new El('div#mydiv', {
+    myattribute: 'myattributevalue',
+}, [
+    new El('ul', [
+        new El('li').setText('List item 1'),
+        new El('li').setText('List item 2'),
+        new El('li').setText('List item 3'),
+    ]),
+]);
+```
+
 Object traversal
+
+Child elements are accessible through their parents by traversing the created object.
+
+```javascript
+mydiv
+```
 
 ## API ##

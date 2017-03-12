@@ -143,6 +143,8 @@ class El {
             this.append(child);
             if (!tracker[child.type]) tracker[child.type] = [];
             tracker[child.type].push(child.type);
+            // child._key = this.getAttribute('id') || (this.getAttribute('class') && this.getAttribute('class').split(' ')[0]) || `${child.type}${tracker[child.type].length - 1}`;
+            // this[child._key] = child;
             this[`${child.type}${tracker[child.type].length - 1}`] = child;
         }
 
@@ -823,4 +825,3 @@ class El {
 window.El = El;
 
 export default El;
-
