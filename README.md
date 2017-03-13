@@ -6,7 +6,7 @@ Elementjs is simply a wrapper for html elements that includes convenient methods
 
 Each El object holds all of it's children, which can be accessed easily by traversing the object.
 
-# [Read Docs](http://localhost:3000) #
+# [Read Docs](https://jjwilly16.github.io/elementjs/) #
 
 ## Installation ##
 
