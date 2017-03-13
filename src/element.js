@@ -6,10 +6,11 @@
 class El {
 
     /**
-     * Element class constructor.
+     * El class constructor.
      * @param {String} type - Type of element to create.
      * @param {Object} attrs - Attributes to set.
-     * @returns {Element} Element instance.
+     * @param {Array} children - Child elements to nest.
+     * @returns {Object} El class instance.
      */
     constructor(type, attrs, children) {
 
@@ -39,42 +40,71 @@ class El {
          */
         this.element = this._createElement();
 
+        // SET ATTRIBUTES
+        this._setAttributes();
+
+        this._parseType(type);
+
         /**
          * @member
          * @type {Array}
          */
         this.children = El.isArray(children) ? this._setChildren(children) : null;
 
-        // SET ATTRIBUTES
-        this._setAttributes();
-
-        this._parseType(type);
-
         return this;
 
     }
 
+    /**
+     * Simple array check.
+     * @static
+     * @public
+     * @param item - Item to check.
+     * @returns {Boolean} Is array.
+     */
     static isArray(item) {
         return Array.isArray(item);
     }
 
+    /**
+     * Simple object check. Arrays not included.
+     * @static
+     * @public
+     * @param item - Item to check.
+     * @returns {Boolean} Is object.
+     */
     static isObject(item) {
         return typeof item === 'object' && !Array.isArray(item) && item !== null;
     }
 
+    /**
+     * Simple string check.
+     * @static
+     * @public
+     * @param item - Item to check.
+     * @returns {Boolean} Is string.
+     */
     static isString(item) {
         return typeof item === 'string' || item instanceof String;
     }
 
+    /**
+     * Simple boolean check.
+     * @static
+     * @public
+     * @param item - Item to check.
+     * @returns {Boolean} Is boolean.
+     */
     static isBoolean(item) {
         return typeof item === 'boolean';
     }
 
     /**
      * Convert an object to a query string.
+     * @public
+     * @static
      * @param  {Object} obj - JS object to encode.
      * @returns {String} URL encoded query string.
-     * @private
      */
     static toQueryString(obj) {
         const str = [];
@@ -88,6 +118,8 @@ class El {
 
     /**
      * Parse the type.
+     * @private
+     * @returns {String} Element type.
      */
     _parseType(type) {
         const matchPattern = /([a-z]+|#[\w-\d]+|\.[\w\d-]+)/g;
@@ -132,7 +164,8 @@ class El {
 
     /**
      * Set the child elements.
-     *
+     * @private
+     * @returns {Array} Child elements.
      */
     _setChildren(children) {
 
@@ -143,10 +176,11 @@ class El {
             this.append(child);
             if (!tracker[child.type]) tracker[child.type] = [];
             tracker[child.type].push(child.type);
-            // child._key = this.getAttribute('id') || (this.getAttribute('class') && this.getAttribute('class').split(' ')[0]) || `${child.type}${tracker[child.type].length - 1}`;
-            // this[child._key] = child;
-            this[`${child.type}${tracker[child.type].length - 1}`] = child;
+            child._key = this.getAttribute('id') || `${child.type}${tracker[child.type].length - 1}`;
+            this[child._key] = child;
         }
+
+        return children;
 
     }
 
@@ -155,7 +189,7 @@ class El {
      * @chainable
      * @public
      * @param {String|Array} myClass - ClassName(s) to add. Can be a space-separated string or an array.
-     * @returns {Element} Element instance.
+     * @returns {Object} El class instance.
      */
     addClass(myClass) {
         if (!myClass) return this;
@@ -180,11 +214,11 @@ class El {
     }
 
     /**
-     * Append an element or text node
+     * Append an element or text node.
      * @chainable
      * @public
-     * @param {Object|String} el - element to append or string to become text node to append
-     * @returns {Element} instance
+     * @param {Object|String} el - Element to append or string to become text node to append.
+     * @returns {Object} El class instance.
      */
     append(el) {
         if (!el) return this;
@@ -195,10 +229,10 @@ class El {
     }
 
     /**
-     * Blur element
+     * Blur element (just a wrapper for the .blur DOM method).
      * @chainable
      * @public
-     * @returns {Element} Element class instance.
+     * @returns {Object} El class instance.
      */
     blur() {
         this.element.blur();
@@ -209,7 +243,7 @@ class El {
      * Simulate an element click (just a wrapper for the .click DOM method).
      * @public
      * @chainable
-     * @returns {Element} Element class instance.
+     * @returns {Object} El class instance.
      */
     click() {
         this.element.click();
@@ -217,11 +251,11 @@ class El {
     }
 
     /**
-     * Disable an element by attribute and class
-     * @param {Boolean} [shouldDisable=true] - conditionally disable
+     * Disable an element by attribute and class.
      * @chainable
      * @public
-     * @returns {Element} instance
+     * @param {Boolean} [shouldDisable=true] - Conditionally disable.
+     * @returns {Object} El class instance.
      */
     disable(shouldDisable) {
         shouldDisable = El.isBoolean(shouldDisable) ? shouldDisable : true;
@@ -230,10 +264,10 @@ class El {
     }
 
     /**
-     * Empty an element's html content
+     * Empty an element's html content.
      * @chainable
      * @public
-     * @returns {Element} instance
+     * @returns {Object} El class instance.
      */
     empty() {
         this.element.innerHTML = '';
@@ -241,11 +275,11 @@ class El {
     }
 
     /**
-     * Enable an element by attribute and class
-     * @param {Boolean} [shouldEnable=true] - conditionally enable
+     * Enable an element by attribute and class.
      * @chainable
      * @public
-     * @returns {Element} instance
+     * @param {Boolean} [shouldEnable=true] - Conditionally enable.
+     * @returns {Object} El class instance.
      */
     enable(shouldEnable) {
         shouldEnable = El.isBoolean(shouldEnable) ? shouldEnable : true;
@@ -263,40 +297,38 @@ class El {
     }
 
     /**
-     * Fade in element
+     * Fade in element.
      * @chainable
      * @public
-     * @param {Number} interval - transition interval
-     * @returns {Element} instance
+     * @param {Number} interval - Transition interval.
+     * @returns {Object} El class instance.
      */
     fadeIn(interval) {
         interval = interval || 0.3;
-        this.element.style.visibility = 'visible';
         this.element.style.opacity = 1;
         this.element.style.transition = `opacity ${interval}s ease-in-out`;
         return this;
     }
 
     /**
-     * Fade out element
+     * Fade out element.
      * @chainable
      * @public
-     * @param {Number} interval - transition interval
-     * @returns {Element} instance
+     * @param {Number} interval - Transition interval.
+     * @returns {Object} El class instance.
      */
     fadeOut(interval) {
         interval = interval || 0.3;
-        // this.element.style.visibility = 'hidden';
         this.element.style.opacity = 0;
         this.element.style.transition = `opacity ${interval}s ease-in-out`;
         return this;
     }
 
     /**
-     * Set focus on element
+     * Set focus on element.
      * @chainable
      * @public
-     * @returns {Element} instance
+     * @returns {Object} El class instance.
      */
     focus() {
         this.element.focus();
@@ -304,10 +336,10 @@ class El {
     }
 
     /**
-     * Gets an attribute
+     * Gets an attribute.
      * @public
-     * @param {String} attr - attribute name to get
-     * @returns {String} attribute value
+     * @param {String} attr - Attribute name to get.
+     * @returns {String} Attribute value.
      */
     getAttribute(attr) {
         if (!attr) return null;
@@ -315,38 +347,38 @@ class El {
     }
 
     /**
-     * Gets the html content
+     * Gets the html content.
      * @public
-     * @returns {String} html content
+     * @returns {String} Html content.
      */
     getHTML() {
         return this.element.innerHTML;
     }
 
     /**
-     * Gets the text content
+     * Gets the text content.
      * @chainable
      * @public
-     * @returns {String} text content
+     * @returns {String} Text content.
      */
     getText() {
         return this.element.textContent;
     }
 
     /**
-     * Gets the value
+     * Gets the value.
      * @public
-     * @returns {String} element value
+     * @returns {String} Element value.
      */
     getValue() {
         return this.element.value;
     }
 
     /**
-     * Check for an attribute
+     * Check for existence of an attribute.
      * @public
-     * @param {String} attrToCheck - attribute to check
-     * @returns {Booolean} has attribute
+     * @param {String} attrToCheck - Attribute to check.
+     * @returns {Booolean} Has attribute.
      */
     hasAttribute(attrToCheck) {
         if (this.element.hasAttribute(attrToCheck)) return true;
@@ -354,10 +386,10 @@ class El {
     }
 
     /**
-     * Check for class
+     * Check for class existence.
      * @public
-     * @param {String} classToCheck - classname to check
-     * @returns {Boolean} class exists
+     * @param {String} classToCheck - Classname to check.
+     * @returns {Boolean} Class exists.
      */
     hasClass(classToCheck) {
 
@@ -381,10 +413,10 @@ class El {
     }
 
     /**
-     * Hide element with display rule
+     * Hide element with display rule.
      * @chainable
      * @public
-     * @returns {Element} instance
+     * @returns {Object} El class instance.
      */
     hide() {
         this.element.style.display = 'none';
@@ -395,8 +427,8 @@ class El {
      * Call hide method, then show after x amount of ms.
      * @chainable
      * @public
-     * @param {Number} [time=3000] - interval to hide
-     * @returns {Element} instance
+     * @param {Number} [time=3000] - Interval to hide.
+     * @returns {Object} El class instance.
      */
     hideFor(time) {
         time = time || 3000;
@@ -415,14 +447,13 @@ class El {
     }
 
     /**
-     * Detach event handler
+     * Detach event handler.
      * @chainable
      * @public
-     * @param {String} eventName - name of event
-     * @param {Function} handler - function reference
-     * @param {Boolean} [bubbles=false] - useCapture
-     * @returns {Element} instance
-     * @todo Find a way to remove specific event handlers from an element. EX: If there are two keyup events assigned to one element, I can't tell the difference between them.
+     * @param {String} eventName - Name of event.
+     * @param {Function} handler - Function reference.
+     * @param {Boolean} [bubbles=false] - useCapture option.
+     * @returns {Object} El class instance.
      */
     off(eventName, handler, bubbles) {
         const events = this.events;
@@ -449,7 +480,7 @@ class El {
      * @param {String|Array} eventsToBind - Name of event(s) to bind. Can be either space-separated string or array.
      * @param {Function} handler - Function handler reference.
      * @param {Boolean} [bubbles=false] - useCapture option.
-     * @returns {Element} instance
+     * @returns {Object} El class instance.
      */
     on(eventsToBind, handler, bubbles) {
         bubbles = bubbles || false;
@@ -479,15 +510,13 @@ class El {
     }
 
     /**
-     * Attach event handler once
-     * Using a wrapper function to handle. This is so we have
-     * the function reference to unbind it later, if needed.
+     * Attach event handler once.
      * @chainable
      * @public
-     * @param {String|Array} eventsToBind - name of event(s)
-     * @param {Function} handler - function reference
-     * @param {Boolean} [bubbles=false] - useCapture
-     * @returns {Element} instance
+     * @param {String|Array} eventsToBind - Name of event(s).
+     * @param {Function} handler - Function reference.
+     * @param {Boolean} [bubbles=false] - useCapture option.
+     * @returns {Object} El class instance.
      */
     one(eventsToBind, handler, bubbles) {
         bubbles = bubbles || false;
@@ -519,20 +548,20 @@ class El {
     }
 
     /**
-     * Return the parent element
-     * @returns {Object} element
+     * Return the parent element.
      * @public
+     * @returns {Object} Parent element.
      */
     parent() {
         return this.element.parentElement || this.element.parentNode || null;
     }
 
     /**
-     * Prepend an element or text node
+     * Prepend an element or text node.
      * @chainable
      * @public
-     * @param {Object|String} el - element to prepend or string to become text node to prepend
-     * @returns {Element} instance
+     * @param {Object|String} el - Element to prepend or string to become text node to prepend.
+     * @returns {Object} El class instance.
      */
     prepend(el) {
         if (!el) return this;
@@ -543,7 +572,7 @@ class El {
     }
 
     /**
-     * Completely remove an element
+     * Completely remove an element.
      * @public
      */
     remove() {
@@ -551,11 +580,11 @@ class El {
     }
 
     /**
-     * Remove single attribute
+     * Remove single attribute.
      * @chainable
      * @public
-     * @param {String} attr - attribute name to remove
-     * @returns {Element} instance
+     * @param {String} attr - Attribute name to remove.
+     * @returns {Object} El class instance.
      */
     removeAttribute(attr) {
         if (!attr) return this;
@@ -564,12 +593,11 @@ class El {
     }
 
     /**
-     * Removes a class
-     * Able to accept multiple classes as a string separated with spaces or an array
+     * Removes a class. Accepts a space-separated string or an array.
      * @chainable
      * @public
-     * @param {String|Array} myClass - className(s) to remove
-     * @returns {Element} instance
+     * @param {String|Array} myClass - ClassName(s) to remove.
+     * @returns {Object} El class instance.
      */
     removeClass(myClass) {
         if (!myClass) return this;
@@ -594,9 +622,9 @@ class El {
 
     /**
      * Transform an element value.
+     * @public
      * @param {String} [returnType=object] - The type of returned value. Either 'object', 'array', or 'string'.
      * @returns {Object|Array|String} The transformed value.
-     * @public
      */
     serialize(returnType) {
 
@@ -625,12 +653,12 @@ class El {
     }
 
     /**
-     * Set single attribute
+     * Set single attribute.
      * @chainable
      * @public
-     * @param {String} attr - attribute name to set
-     * @param {String} attrValue - attribute value
-     * @returns {Element} instance
+     * @param {String} attr - Attribute name to set.
+     * @param {String} attrValue - Attribute value.
+     * @returns {Object} El class instance.
      */
     setAttribute(attr, attrValue) {
         if (attrValue === undefined || attrValue === null) return this;
@@ -639,11 +667,11 @@ class El {
     }
 
     /**
-     * Sets the html content
+     * Sets the html content.
      * @chainable
      * @public
-     * @param {String} html - html to set
-     * @returns {Element} instance
+     * @param {String} html - Html to set.
+     * @returns {Object} El class instance.
      */
     setHTML(html) {
         if (html === undefined || html === null || !El.isString(html)) return this;
@@ -652,11 +680,11 @@ class El {
     }
 
     /**
-     * Set styles
+     * Set styles.
      * @chainable
      * @public
-     * @param {Object} styles - styles to set
-     * @returns {Element} instance
+     * @param {Object} styles - Styles to set.
+     * @returns {Object} El class instance.
      */
     setStyles(styles) {
         if (!styles) return this;
@@ -669,11 +697,11 @@ class El {
     }
 
     /**
-     * Sets the text content
+     * Sets the text content.
      * @chainable
      * @public
-     * @param {String} text - text to set
-     * @returns {Element} instance
+     * @param {String} text - Text to set.
+     * @returns {Object} El class instance.
      */
     setText(text) {
         if (text === undefined || text === null || !El.isString(text)) return this;
@@ -684,11 +712,11 @@ class El {
     }
 
     /**
-     * Sets the value property
+     * Sets the value property.
      * @chainable
      * @public
      * @param {String} val - value to set
-     * @returns {Element} instance
+     * @returns {Object} El class instance.
      */
     setValue(val) {
         if (val === undefined) return this;
@@ -700,7 +728,7 @@ class El {
      * Show element with display rule.
      * @chainable
      * @public
-     * @returns {Element} Element instance.
+     * @returns {Object} El class instance.
      */
     show() {
         this.element.style.display = '';
@@ -712,7 +740,7 @@ class El {
      * @chainable
      * @public
      * @param {Number} [time=3000] - Interval to show.
-     * @returns {Element} Element instance.
+     * @returns {Object} El class instance.
      */
     showFor(time) {
         time = time || 3000;
@@ -723,10 +751,10 @@ class El {
 
     /**
      * Toggles the checked state of the element.
-     * @param {Boolean} state - Desired check state.
-     * @returns {Element} Element instance.
      * @public
      * @chainable
+     * @param {Boolean} state - Desired check state.
+     * @returns {Object} El class instance.
      */
     toggleCheck(state) {
         this.element.checked = El.isBoolean(state) ? state : !this.element.checked;
@@ -735,11 +763,11 @@ class El {
 
     /**
      * Trigger an event and dispatch it. Convenient for custom events.
-     * @param {String} eventName - Event to trigger.
-     * @param {Object} params - Event options.
-     * @returns {Element} Element instance.
      * @public
      * @chainable
+     * @param {String} eventName - Event to trigger.
+     * @param {Object} params - Event options.
+     * @returns {Object} El class instance.
      */
     trigger(eventName, params) {
         if (!El.isObject(params)) params = {};
@@ -777,7 +805,7 @@ class El {
      * Unbind all events associated with an element.
      * @chainable
      * @public
-     * @returns {Element} ELement instance.
+     * @returns {Object} El class instance.
      */
     unbindEvents() {
 
@@ -800,7 +828,7 @@ class El {
      * @param {String} namespace - Namespace to unbind.
      * @chainable
      * @private
-     * @returns {Element} Element instance.
+     * @returns {Object} El class instance.
      */
     unbindNamespace(namespace) {
 

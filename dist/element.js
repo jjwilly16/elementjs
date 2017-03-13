@@ -121,10 +121,11 @@ var set = function set(object, property, value, receiver) {
 var El = function () {
 
     /**
-     * Element class constructor.
+     * El class constructor.
      * @param {String} type - Type of element to create.
      * @param {Object} attrs - Attributes to set.
-     * @returns {Element} Element instance.
+     * @param {Array} children - Child elements to nest.
+     * @returns {Object} El class instance.
      */
     function El(type, attrs, children) {
         classCallCheck(this, El);
@@ -156,19 +157,28 @@ var El = function () {
          */
         this.element = this._createElement();
 
+        // SET ATTRIBUTES
+        this._setAttributes();
+
+        this._parseType(type);
+
         /**
          * @member
          * @type {Array}
          */
         this.children = El.isArray(children) ? this._setChildren(children) : null;
 
-        // SET ATTRIBUTES
-        this._setAttributes();
-
-        this._parseType(type);
-
         return this;
     }
+
+    /**
+     * Simple array check.
+     * @static
+     * @public
+     * @param item - Item to check.
+     * @returns {Boolean} Is array.
+     */
+
 
     createClass(El, [{
         key: '_parseType',
@@ -176,6 +186,8 @@ var El = function () {
 
         /**
          * Parse the type.
+         * @private
+         * @returns {String} Element type.
          */
         value: function _parseType(type) {
             var matchPattern = /([a-z]+|#[\w-\d]+|\.[\w\d-]+)/g;
@@ -224,7 +236,8 @@ var El = function () {
 
         /**
          * Set the child elements.
-         *
+         * @private
+         * @returns {Array} Child elements.
          */
 
     }, {
@@ -238,10 +251,11 @@ var El = function () {
                 this.append(child);
                 if (!tracker[child.type]) tracker[child.type] = [];
                 tracker[child.type].push(child.type);
-                // child._key = this.getAttribute('id') || (this.getAttribute('class') && this.getAttribute('class').split(' ')[0]) || `${child.type}${tracker[child.type].length - 1}`;
-                // this[child._key] = child;
-                this['' + child.type + (tracker[child.type].length - 1)] = child;
+                child._key = this.getAttribute('id') || '' + child.type + (tracker[child.type].length - 1);
+                this[child._key] = child;
             }
+
+            return children;
         }
 
         /**
@@ -249,7 +263,7 @@ var El = function () {
          * @chainable
          * @public
          * @param {String|Array} myClass - ClassName(s) to add. Can be a space-separated string or an array.
-         * @returns {Element} Element instance.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -273,11 +287,11 @@ var El = function () {
         }
 
         /**
-         * Append an element or text node
+         * Append an element or text node.
          * @chainable
          * @public
-         * @param {Object|String} el - element to append or string to become text node to append
-         * @returns {Element} instance
+         * @param {Object|String} el - Element to append or string to become text node to append.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -291,10 +305,10 @@ var El = function () {
         }
 
         /**
-         * Blur element
+         * Blur element (just a wrapper for the .blur DOM method).
          * @chainable
          * @public
-         * @returns {Element} Element class instance.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -308,7 +322,7 @@ var El = function () {
          * Simulate an element click (just a wrapper for the .click DOM method).
          * @public
          * @chainable
-         * @returns {Element} Element class instance.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -319,11 +333,11 @@ var El = function () {
         }
 
         /**
-         * Disable an element by attribute and class
-         * @param {Boolean} [shouldDisable=true] - conditionally disable
+         * Disable an element by attribute and class.
          * @chainable
          * @public
-         * @returns {Element} instance
+         * @param {Boolean} [shouldDisable=true] - Conditionally disable.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -335,10 +349,10 @@ var El = function () {
         }
 
         /**
-         * Empty an element's html content
+         * Empty an element's html content.
          * @chainable
          * @public
-         * @returns {Element} instance
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -349,11 +363,11 @@ var El = function () {
         }
 
         /**
-         * Enable an element by attribute and class
-         * @param {Boolean} [shouldEnable=true] - conditionally enable
+         * Enable an element by attribute and class.
          * @chainable
          * @public
-         * @returns {Element} instance
+         * @param {Boolean} [shouldEnable=true] - Conditionally enable.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -377,46 +391,44 @@ var El = function () {
         }
 
         /**
-         * Fade in element
+         * Fade in element.
          * @chainable
          * @public
-         * @param {Number} interval - transition interval
-         * @returns {Element} instance
+         * @param {Number} interval - Transition interval.
+         * @returns {Object} El class instance.
          */
 
     }, {
         key: 'fadeIn',
         value: function fadeIn(interval) {
             interval = interval || 0.3;
-            this.element.style.visibility = 'visible';
             this.element.style.opacity = 1;
             this.element.style.transition = 'opacity ' + interval + 's ease-in-out';
             return this;
         }
 
         /**
-         * Fade out element
+         * Fade out element.
          * @chainable
          * @public
-         * @param {Number} interval - transition interval
-         * @returns {Element} instance
+         * @param {Number} interval - Transition interval.
+         * @returns {Object} El class instance.
          */
 
     }, {
         key: 'fadeOut',
         value: function fadeOut(interval) {
             interval = interval || 0.3;
-            // this.element.style.visibility = 'hidden';
             this.element.style.opacity = 0;
             this.element.style.transition = 'opacity ' + interval + 's ease-in-out';
             return this;
         }
 
         /**
-         * Set focus on element
+         * Set focus on element.
          * @chainable
          * @public
-         * @returns {Element} instance
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -427,10 +439,10 @@ var El = function () {
         }
 
         /**
-         * Gets an attribute
+         * Gets an attribute.
          * @public
-         * @param {String} attr - attribute name to get
-         * @returns {String} attribute value
+         * @param {String} attr - Attribute name to get.
+         * @returns {String} Attribute value.
          */
 
     }, {
@@ -441,9 +453,9 @@ var El = function () {
         }
 
         /**
-         * Gets the html content
+         * Gets the html content.
          * @public
-         * @returns {String} html content
+         * @returns {String} Html content.
          */
 
     }, {
@@ -453,10 +465,10 @@ var El = function () {
         }
 
         /**
-         * Gets the text content
+         * Gets the text content.
          * @chainable
          * @public
-         * @returns {String} text content
+         * @returns {String} Text content.
          */
 
     }, {
@@ -466,9 +478,9 @@ var El = function () {
         }
 
         /**
-         * Gets the value
+         * Gets the value.
          * @public
-         * @returns {String} element value
+         * @returns {String} Element value.
          */
 
     }, {
@@ -478,10 +490,10 @@ var El = function () {
         }
 
         /**
-         * Check for an attribute
+         * Check for existence of an attribute.
          * @public
-         * @param {String} attrToCheck - attribute to check
-         * @returns {Booolean} has attribute
+         * @param {String} attrToCheck - Attribute to check.
+         * @returns {Booolean} Has attribute.
          */
 
     }, {
@@ -492,10 +504,10 @@ var El = function () {
         }
 
         /**
-         * Check for class
+         * Check for class existence.
          * @public
-         * @param {String} classToCheck - classname to check
-         * @returns {Boolean} class exists
+         * @param {String} classToCheck - Classname to check.
+         * @returns {Boolean} Class exists.
          */
 
     }, {
@@ -523,10 +535,10 @@ var El = function () {
         }
 
         /**
-         * Hide element with display rule
+         * Hide element with display rule.
          * @chainable
          * @public
-         * @returns {Element} instance
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -540,8 +552,8 @@ var El = function () {
          * Call hide method, then show after x amount of ms.
          * @chainable
          * @public
-         * @param {Number} [time=3000] - interval to hide
-         * @returns {Element} instance
+         * @param {Number} [time=3000] - Interval to hide.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -570,14 +582,13 @@ var El = function () {
         }
 
         /**
-         * Detach event handler
+         * Detach event handler.
          * @chainable
          * @public
-         * @param {String} eventName - name of event
-         * @param {Function} handler - function reference
-         * @param {Boolean} [bubbles=false] - useCapture
-         * @returns {Element} instance
-         * @todo Find a way to remove specific event handlers from an element. EX: If there are two keyup events assigned to one element, I can't tell the difference between them.
+         * @param {String} eventName - Name of event.
+         * @param {Function} handler - Function reference.
+         * @param {Boolean} [bubbles=false] - useCapture option.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -609,7 +620,7 @@ var El = function () {
          * @param {String|Array} eventsToBind - Name of event(s) to bind. Can be either space-separated string or array.
          * @param {Function} handler - Function handler reference.
          * @param {Boolean} [bubbles=false] - useCapture option.
-         * @returns {Element} instance
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -644,15 +655,13 @@ var El = function () {
         }
 
         /**
-         * Attach event handler once
-         * Using a wrapper function to handle. This is so we have
-         * the function reference to unbind it later, if needed.
+         * Attach event handler once.
          * @chainable
          * @public
-         * @param {String|Array} eventsToBind - name of event(s)
-         * @param {Function} handler - function reference
-         * @param {Boolean} [bubbles=false] - useCapture
-         * @returns {Element} instance
+         * @param {String|Array} eventsToBind - Name of event(s).
+         * @param {Function} handler - Function reference.
+         * @param {Boolean} [bubbles=false] - useCapture option.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -693,9 +702,9 @@ var El = function () {
         }
 
         /**
-         * Return the parent element
-         * @returns {Object} element
+         * Return the parent element.
          * @public
+         * @returns {Object} Parent element.
          */
 
     }, {
@@ -705,11 +714,11 @@ var El = function () {
         }
 
         /**
-         * Prepend an element or text node
+         * Prepend an element or text node.
          * @chainable
          * @public
-         * @param {Object|String} el - element to prepend or string to become text node to prepend
-         * @returns {Element} instance
+         * @param {Object|String} el - Element to prepend or string to become text node to prepend.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -723,7 +732,7 @@ var El = function () {
         }
 
         /**
-         * Completely remove an element
+         * Completely remove an element.
          * @public
          */
 
@@ -734,11 +743,11 @@ var El = function () {
         }
 
         /**
-         * Remove single attribute
+         * Remove single attribute.
          * @chainable
          * @public
-         * @param {String} attr - attribute name to remove
-         * @returns {Element} instance
+         * @param {String} attr - Attribute name to remove.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -750,12 +759,11 @@ var El = function () {
         }
 
         /**
-         * Removes a class
-         * Able to accept multiple classes as a string separated with spaces or an array
+         * Removes a class. Accepts a space-separated string or an array.
          * @chainable
          * @public
-         * @param {String|Array} myClass - className(s) to remove
-         * @returns {Element} instance
+         * @param {String|Array} myClass - ClassName(s) to remove.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -783,9 +791,9 @@ var El = function () {
 
         /**
          * Transform an element value.
+         * @public
          * @param {String} [returnType=object] - The type of returned value. Either 'object', 'array', or 'string'.
          * @returns {Object|Array|String} The transformed value.
-         * @public
          */
 
     }, {
@@ -818,12 +826,12 @@ var El = function () {
         }
 
         /**
-         * Set single attribute
+         * Set single attribute.
          * @chainable
          * @public
-         * @param {String} attr - attribute name to set
-         * @param {String} attrValue - attribute value
-         * @returns {Element} instance
+         * @param {String} attr - Attribute name to set.
+         * @param {String} attrValue - Attribute value.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -835,11 +843,11 @@ var El = function () {
         }
 
         /**
-         * Sets the html content
+         * Sets the html content.
          * @chainable
          * @public
-         * @param {String} html - html to set
-         * @returns {Element} instance
+         * @param {String} html - Html to set.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -851,11 +859,11 @@ var El = function () {
         }
 
         /**
-         * Set styles
+         * Set styles.
          * @chainable
          * @public
-         * @param {Object} styles - styles to set
-         * @returns {Element} instance
+         * @param {Object} styles - Styles to set.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -871,11 +879,11 @@ var El = function () {
         }
 
         /**
-         * Sets the text content
+         * Sets the text content.
          * @chainable
          * @public
-         * @param {String} text - text to set
-         * @returns {Element} instance
+         * @param {String} text - Text to set.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -888,11 +896,11 @@ var El = function () {
         }
 
         /**
-         * Sets the value property
+         * Sets the value property.
          * @chainable
          * @public
          * @param {String} val - value to set
-         * @returns {Element} instance
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -907,7 +915,7 @@ var El = function () {
          * Show element with display rule.
          * @chainable
          * @public
-         * @returns {Element} Element instance.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -922,7 +930,7 @@ var El = function () {
          * @chainable
          * @public
          * @param {Number} [time=3000] - Interval to show.
-         * @returns {Element} Element instance.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -940,10 +948,10 @@ var El = function () {
 
         /**
          * Toggles the checked state of the element.
-         * @param {Boolean} state - Desired check state.
-         * @returns {Element} Element instance.
          * @public
          * @chainable
+         * @param {Boolean} state - Desired check state.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -955,11 +963,11 @@ var El = function () {
 
         /**
          * Trigger an event and dispatch it. Convenient for custom events.
-         * @param {String} eventName - Event to trigger.
-         * @param {Object} params - Event options.
-         * @returns {Element} Element instance.
          * @public
          * @chainable
+         * @param {String} eventName - Event to trigger.
+         * @param {Object} params - Event options.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -1000,7 +1008,7 @@ var El = function () {
          * Unbind all events associated with an element.
          * @chainable
          * @public
-         * @returns {Element} ELement instance.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -1025,7 +1033,7 @@ var El = function () {
          * @param {String} namespace - Namespace to unbind.
          * @chainable
          * @private
-         * @returns {Element} Element instance.
+         * @returns {Object} El class instance.
          */
 
     }, {
@@ -1051,16 +1059,43 @@ var El = function () {
         value: function isArray(item) {
             return Array.isArray(item);
         }
+
+        /**
+         * Simple object check. Arrays not included.
+         * @static
+         * @public
+         * @param item - Item to check.
+         * @returns {Boolean} Is object.
+         */
+
     }, {
         key: 'isObject',
         value: function isObject(item) {
             return (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && !Array.isArray(item) && item !== null;
         }
+
+        /**
+         * Simple string check.
+         * @static
+         * @public
+         * @param item - Item to check.
+         * @returns {Boolean} Is string.
+         */
+
     }, {
         key: 'isString',
         value: function isString(item) {
             return typeof item === 'string' || item instanceof String;
         }
+
+        /**
+         * Simple boolean check.
+         * @static
+         * @public
+         * @param item - Item to check.
+         * @returns {Boolean} Is boolean.
+         */
+
     }, {
         key: 'isBoolean',
         value: function isBoolean(item) {
@@ -1069,9 +1104,10 @@ var El = function () {
 
         /**
          * Convert an object to a query string.
+         * @public
+         * @static
          * @param  {Object} obj - JS object to encode.
          * @returns {String} URL encoded query string.
-         * @private
          */
 
     }, {
