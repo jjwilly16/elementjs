@@ -2,3 +2,5 @@
 node_modules
 .vscode
 notes.txt
+
+demo/docs*
