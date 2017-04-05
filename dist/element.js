@@ -181,14 +181,40 @@ var El = function () {
 
 
     createClass(El, [{
-        key: '_parseType',
+        key: '_getChildren',
 
+
+        /**
+         * Gets all nested child El instances. Recursive.
+         * @private
+         * @param {String|Array} type - Element type filter.
+         * @returns {Array} Child el instances.
+         */
+        value: function _getChildren(type, returnedEls) {
+            type = type || [];
+            returnedEls = returnedEls || [];
+            var children = this.children;
+            var i = 0;
+            for (; i < children.length; i++) {
+                var child = children[i];
+                if (type && type.length) {
+                    if (type.indexOf(child.type) > -1) returnedEls.push(child);
+                } else {
+                    returnedEls.push(child);
+                }
+                if (child.children) this._getChildren.call(child, type, returnedEls);
+            }
+            return returnedEls;
+        }
 
         /**
          * Parse the type.
          * @private
          * @returns {String} Element type.
          */
+
+    }, {
+        key: '_parseType',
         value: function _parseType(type) {
             var matchPattern = /([a-z]+|#[\w-\d]+|\.[\w\d-]+)/g;
             if (!El.isString(type)) throw new Error('El TypeError: The first parameter must be a string!');
@@ -251,7 +277,7 @@ var El = function () {
                 this.append(child);
                 if (!tracker[child.type]) tracker[child.type] = [];
                 tracker[child.type].push(child.type);
-                child._key = this.getAttribute('id') || '' + child.type + (tracker[child.type].length - 1);
+                child._key = child.getAttribute('id') || '' + child.type + (tracker[child.type].length - 1);
                 this[child._key] = child;
             }
 
@@ -450,6 +476,21 @@ var El = function () {
         value: function getAttribute(attr) {
             if (!attr) return null;
             return this.element.getAttribute(attr);
+        }
+
+        /**
+         * Gets all nested child El instances.
+         * @public
+         * @param {String|Array} typeFilter - Element type filter.
+         * @returns {Array} Child El instances.
+         */
+
+    }, {
+        key: 'getChildren',
+        value: function getChildren(typeFilter) {
+            typeFilter = typeFilter || [];
+            typeFilter = El.isArray(typeFilter) ? typeFilter : typeFilter.split();
+            return this._getChildren(typeFilter);
         }
 
         /**

@@ -1,13 +1,18 @@
 {
   "name": "elementjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Build and interact with html elements easily with javascript.",
-  "main": "./src/element.js",
+  "main": "./dist/element.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "docs": "jsdoc -c conf.json -t ./node_modules/ink-docstrap/template"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "element",
+    "html",
+    "form",
+    "dom",
+    "virtual"
+  ],
   "author": "Justin Williamson <jwilliamson@ibidata.com>",
   "license": "MIT",
   "devDependencies": {
@@ -16,9 +21,8 @@
     "babelrc-rollup": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-connect": "^5.0.0",
+    "gulp-jsdoc3": "^1.0.1",
     "gulp-uglify": "^2.0.0",
-    "ink-docstrap": "^1.3.0",
-    "jsdoc": "^3.4.3",
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-uglify": "^1.0.1"

@@ -1,31 +1,32 @@
 {
-    "source": {
-        "include": [
-            "src/"
-         ],
-        "exclude": [],
-        "includePattern": ".+\\.js(doc)?$",
-        "excludePattern": "(^|\\/|\\\\)_"
-    },
     "opts": {
-        "destination": "docs/",
-        "recurse": true,
-        "package": "package.json",
-        "readme": "README.md",
-        "template": {
-            "cleverLinks": false,
-            "monospaceLinks": false,
-            "default": {
-                "outputSourceFiles": true
-            },
-            "systemName": "Elementjs",
-            "footer": "",
-            "copyright": "DocStrap Copyright © 2012-2013 The contributors to the JSDoc3 and DocStrap projects.",
-            "navType": "vertical",
-            "theme": "flatly",
-            "linenums": true,
-            "collapseSymbols": false,
-            "inverseNav": true
-        }
+        "destination": "./docs/"
+    },
+    "tags": {
+        "allowUnknownTags": true
+    },
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "templates": {
+        "default": {
+            "outputSourceFiles": true
+        },
+        "logoFile": "",
+        "cleverLinks": true,
+        "monospaceLinks": false,
+        "dateFormat": "ddd MMM Do YYYY",
+        "outputSourceFiles": true,
+        "outputSourcePath": false,
+        "systemName": "Elementjs Documentation",
+        "footer": "",
+        "copyright": "DocStrap Copyright © 2012-2015 The contributors to the JSDoc3 and DocStrap projects.",
+        "navType": "vertical",
+        "theme": "readable",
+        "linenums": true,
+        "collapseSymbols": false,
+        "inverseNav": true,
+        "protocol": "html://",
+        "methodHeadingReturns": false
     }
 }
