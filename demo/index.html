@@ -16,19 +16,34 @@
 
     <script>
 
+        El.prototype._extenders = [
+            {
+                name: 'testExtender',
+                fn: function (something) {
+                    console.log(something);
+                }
+            }
+        ];
+
         window.el = new El('div#myid', [
             new El('h1#myh1').setText('My List'),
-            new El('ul', {
-                _key: 'mylist',
+            new El('ul$mylist', {
+                testExtender: 'hello there',
             }, [
-                new El('li', {
-                    _key: 'item1',
-                }).setText('Item 1'),
-                new El('li', {
-                    _key: 'item2',
+                new El('li$item1').setText('Item 1'),
+                new El('li$item2', {
+                    data: {
+                        data1: 'hey',
+                        data2: '',
+                    }
                 }).setText('Item 2'),
             ]),
         ]);
+
+        setTimeout(function() {
+            window.el.append(new El('h2').setText('hello').setKey('hellothere'));
+            console.log(window.el);
+        }, 3000);
 
         document.body.appendChild(window.el.element);
 

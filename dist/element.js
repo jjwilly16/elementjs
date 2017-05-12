@@ -4,6 +4,31 @@
   (global.element = factory());
 }(this, (function () { 'use strict';
 
+var extenders = [{
+    name: 'class',
+    fn: function fn(classNames) {
+        if (!El.isString(classNames) || !El.isArray(classNames)) throw new Error('The "class" extender value must be a string or an array!');
+        return this.addClass(classNames);
+    }
+}, {
+    name: 'data',
+    fn: function fn(attrs) {
+        if (!El.isObject(attrs)) throw new Error('The "data" extender value must be an object!');
+        for (var tag in attrs) {
+            if (attrs.hasOwnProperty(tag)) {
+                var attribute = attrs[tag];
+                if (El.isTruthy(attribute)) this.setAttribute('data-' + tag, attribute);
+            }
+        }
+    }
+}, {
+    name: 'style',
+    fn: function fn(styles) {
+        if (!El.isObject(styles)) throw new Error('The "style" extender value must be an object!');
+        return this.setStyles(styles);
+    }
+}];
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
 } : function (obj) {
@@ -118,6 +143,7 @@ var set = function set(object, property, value, receiver) {
  * @class
  * @classdesc Creates an HTML element and wraps it with convenience methods.
  */
+
 var El = function () {
 
     /**
@@ -143,13 +169,19 @@ var El = function () {
          * @member
          * @type {String}
          */
-        this.type = type.split('.')[0].split('#')[0];
+        this.type = type.split('.')[0].split('#')[0].split('$')[0];
 
         /**
          * @member
          * @type {Array}
          */
         this.events = [];
+
+        /**
+         * @member
+         * @type {Array}
+         */
+        this.extenders = extenders.concat(this._extenders || []);
 
         /**
          * @member
@@ -216,13 +248,14 @@ var El = function () {
     }, {
         key: '_parseType',
         value: function _parseType(type) {
-            var matchPattern = /([a-z]+|#[\w-\d]+|\.[\w\d-]+)/g;
+            var matchPattern = /([a-zA-Z0-9]+|#[\w-\d]+|\.[\w\d-]+|\$[\w\d-]+)/g;
             if (!El.isString(type)) throw new Error('El TypeError: The first parameter must be a string!');
             var matches = type.match(matchPattern);
             var elementType = matches.shift();
             for (var i = 0; i < matches.length; i++) {
                 if (matches[i].indexOf('#') > -1) this.setAttribute('id', matches[i].slice(1));
                 if (matches[i].indexOf('.') > -1) this.addClass(matches[i].slice(1));
+                if (matches[i].indexOf('$') > -1) this.setKey(matches[i].slice(1));
             }
             return elementType;
         }
@@ -253,36 +286,51 @@ var El = function () {
 
             for (var prop in attrs) {
                 if (attrs.hasOwnProperty(prop)) {
-                    El._setAttribute(this, prop, attrs);
+                    var extenderNames = this.extenders.map(function (i) {
+                        return i.name;
+                    });
+
+                    // Check for an existing extender that matches the attribute name
+                    if (extenderNames.indexOf(prop) > -1) this.extenders[extenderNames.indexOf(prop)].fn.call(this, attrs[prop]);else this._setAttribute(prop, attrs);
                 }
             }
         }
 
         /**
-         * Sets an attribute
+         * Sets an attribute.
          * @private
          */
 
     }, {
-        key: '_setChildren',
-
+        key: '_setAttribute',
+        value: function _setAttribute(prop, attrs) {
+            if (El.isTruthy(attrs[prop])) {
+                if (prop === '_key') {
+                    this._key = attrs[prop];
+                } else {
+                    this.element.setAttribute(prop, El.isArray(attrs[prop]) ? attrs[prop].join(' ') : attrs[prop]);
+                }
+            }
+        }
 
         /**
          * Set the child elements.
          * @private
          * @returns {Array} Child elements.
          */
+
+    }, {
+        key: '_setChildren',
         value: function _setChildren(children) {
 
             var tracker = {};
 
             for (var i = 0; i < children.length; i++) {
                 var child = children[i];
-                this.append(child);
                 if (!tracker[child.type]) tracker[child.type] = [];
                 tracker[child.type].push(child.type);
-                child._key = child.attributes._key || child.getAttribute('id') || '' + child.type + (tracker[child.type].length - 1);
-                this[child._key] = child;
+                child._key = child._key || child.attributes._key || child.getAttribute('id') || '' + child.type + (tracker[child.type].length - 1);
+                this.append(child);
             }
 
             return children;
@@ -330,6 +378,9 @@ var El = function () {
             if (!el) return this;
             if (El.isObject(el)) this.element.appendChild(el.element || el);
             if (El.isString(el)) this.element.appendChild(document.createTextNode(el));
+
+            // Set the child key
+            this[el._key] = el;
 
             return this;
         }
@@ -904,6 +955,21 @@ var El = function () {
         }
 
         /**
+         * Set the unique key for an element.
+         * @chainable
+         * @public
+         * @param {String} key - Key to set.
+         * @returns {Object} El class instance.
+         */
+
+    }, {
+        key: 'setKey',
+        value: function setKey(key) {
+            this._key = key;
+            return this;
+        }
+
+        /**
          * Set styles.
          * @chainable
          * @public
@@ -1134,6 +1200,20 @@ var El = function () {
         }
 
         /**
+         * Simple number check.
+         * @static
+         * @public
+         * @param item - Item to check.
+         * @returns {Boolean} Is number.
+         */
+
+    }, {
+        key: 'isNumber',
+        value: function isNumber(item) {
+            return !isNaN(parseFloat(item)) && isFinite(item);
+        }
+
+        /**
          * Simple boolean check.
          * @static
          * @public
@@ -1145,6 +1225,20 @@ var El = function () {
         key: 'isBoolean',
         value: function isBoolean(item) {
             return typeof item === 'boolean';
+        }
+
+        /**
+         * Simple truthy check. Eliminates null, undefined and Infinity. Zero's are considered truthy (useful for setting attributes), as well as empty strings (used for setting blank attributes).
+         * @static
+         * @public
+         * @param item - Item to check.
+         * @returns {Boolean} Is truthy.
+         */
+
+    }, {
+        key: 'isTruthy',
+        value: function isTruthy(item) {
+            return item !== undefined && item !== null && item !== Infinity;
         }
 
         /**
@@ -1165,17 +1259,6 @@ var El = function () {
                 }
             }
             return str.join('&');
-        }
-    }, {
-        key: '_setAttribute',
-        value: function _setAttribute(element, prop, attrs) {
-            if (attrs[prop] !== undefined && attrs[prop] !== null) {
-                if (prop === '_key') {
-                    element[prop] = attrs[prop];
-                } else {
-                    element.element.setAttribute(prop, El.isArray(attrs[prop]) ? attrs[prop].join(' ') : attrs[prop]);
-                }
-            }
         }
     }]);
     return El;

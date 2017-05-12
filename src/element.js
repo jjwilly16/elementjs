@@ -1,3 +1,5 @@
+import extenders from './extenders';
+
 /**
  * El Class
  * @class
@@ -26,13 +28,19 @@ class El {
          * @member
          * @type {String}
          */
-        this.type = type.split('.')[0].split('#')[0];
+        this.type = type.split('.')[0].split('#')[0].split('$')[0];
 
         /**
          * @member
          * @type {Array}
          */
         this.events = [];
+
+        /**
+         * @member
+         * @type {Array}
+         */
+        this.extenders = extenders.concat(this._extenders || []);
 
         /**
          * @member
@@ -89,6 +97,17 @@ class El {
     }
 
     /**
+     * Simple number check.
+     * @static
+     * @public
+     * @param item - Item to check.
+     * @returns {Boolean} Is number.
+     */
+    static isNumber(item) {
+        return !isNaN(parseFloat(item)) && isFinite(item);
+    }
+
+    /**
      * Simple boolean check.
      * @static
      * @public
@@ -97,6 +116,17 @@ class El {
      */
     static isBoolean(item) {
         return typeof item === 'boolean';
+    }
+
+    /**
+     * Simple truthy check. Eliminates null, undefined and Infinity. Zero's are considered truthy (useful for setting attributes), as well as empty strings (used for setting blank attributes).
+     * @static
+     * @public
+     * @param item - Item to check.
+     * @returns {Boolean} Is truthy.
+     */
+    static isTruthy(item) {
+        return item !== undefined && item !== null && item !== Infinity;
     }
 
     /**
@@ -145,13 +175,14 @@ class El {
      * @returns {String} Element type.
      */
     _parseType(type) {
-        const matchPattern = /([a-z]+|#[\w-\d]+|\.[\w\d-]+)/g;
+        const matchPattern = /([a-zA-Z0-9]+|#[\w-\d]+|\.[\w\d-]+|\$[\w\d-]+)/g;
         if (!El.isString(type)) throw new Error('El TypeError: The first parameter must be a string!');
         const matches = type.match(matchPattern);
         const elementType = matches.shift();
         for (let i = 0; i < matches.length; i++) {
             if (matches[i].indexOf('#') > -1) this.setAttribute('id', matches[i].slice(1));
             if (matches[i].indexOf('.') > -1) this.addClass(matches[i].slice(1));
+            if (matches[i].indexOf('$') > -1) this.setKey(matches[i].slice(1));
         }
         return elementType;
     }
@@ -177,22 +208,26 @@ class El {
 
         for (const prop in attrs) {
             if (attrs.hasOwnProperty(prop)) {
-                El._setAttribute(this, prop, attrs);
+                const extenderNames = this.extenders.map(i => i.name);
+
+                // Check for an existing extender that matches the attribute name
+                if (extenderNames.indexOf(prop) > -1) this.extenders[extenderNames.indexOf(prop)].fn.call(this, attrs[prop]);
+                else this._setAttribute(prop, attrs);
             }
         }
 
     }
 
     /**
-     * Sets an attribute
+     * Sets an attribute.
      * @private
      */
-    static _setAttribute(element, prop, attrs) {
-        if (attrs[prop] !== undefined && attrs[prop] !== null) {
+    _setAttribute(prop, attrs) {
+        if (El.isTruthy(attrs[prop])) {
             if (prop === '_key') {
-                element[prop] = attrs[prop];
+                this._key = attrs[prop];
             } else {
-                element.element.setAttribute(prop, El.isArray(attrs[prop]) ? attrs[prop].join(' ') : attrs[prop]);
+                this.element.setAttribute(prop, El.isArray(attrs[prop]) ? attrs[prop].join(' ') : attrs[prop]);
             }
         }
     }
@@ -208,11 +243,10 @@ class El {
 
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            this.append(child);
             if (!tracker[child.type]) tracker[child.type] = [];
             tracker[child.type].push(child.type);
-            child._key = child.attributes._key || child.getAttribute('id') || `${child.type}${tracker[child.type].length - 1}`;
-            this[child._key] = child;
+            child._key = child._key || child.attributes._key || child.getAttribute('id') || `${child.type}${tracker[child.type].length - 1}`;
+            this.append(child);
         }
 
         return children;
@@ -259,6 +293,9 @@ class El {
         if (!el) return this;
         if (El.isObject(el)) this.element.appendChild(el.element || el);
         if (El.isString(el)) this.element.appendChild(document.createTextNode(el));
+
+        // Set the child key
+        this[el._key] = el;
 
         return this;
     }
@@ -723,6 +760,18 @@ class El {
     setHTML(html) {
         if (html === undefined || html === null || !El.isString(html)) return this;
         this.element.innerHTML = html;
+        return this;
+    }
+
+    /**
+     * Set the unique key for an element.
+     * @chainable
+     * @public
+     * @param {String} key - Key to set.
+     * @returns {Object} El class instance.
+     */
+    setKey(key) {
+        this._key = key;
         return this;
     }
 
