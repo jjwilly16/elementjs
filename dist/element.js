@@ -253,21 +253,25 @@ var El = function () {
 
             for (var prop in attrs) {
                 if (attrs.hasOwnProperty(prop)) {
-                    if (attrs[prop] !== undefined && attrs[prop] !== null) {
-                        this.element.setAttribute(prop, El.isArray(attrs[prop]) ? attrs[prop].join(' ') : attrs[prop]);
-                    }
+                    El._setAttribute(this, prop, attrs);
                 }
             }
         }
+
+        /**
+         * Sets an attribute
+         * @private
+         */
+
+    }, {
+        key: '_setChildren',
+
 
         /**
          * Set the child elements.
          * @private
          * @returns {Array} Child elements.
          */
-
-    }, {
-        key: '_setChildren',
         value: function _setChildren(children) {
 
             var tracker = {};
@@ -277,7 +281,7 @@ var El = function () {
                 this.append(child);
                 if (!tracker[child.type]) tracker[child.type] = [];
                 tracker[child.type].push(child.type);
-                child._key = child.getAttribute('id') || '' + child.type + (tracker[child.type].length - 1);
+                child._key = child.attributes._key || child.getAttribute('id') || '' + child.type + (tracker[child.type].length - 1);
                 this[child._key] = child;
             }
 
@@ -1161,6 +1165,17 @@ var El = function () {
                 }
             }
             return str.join('&');
+        }
+    }, {
+        key: '_setAttribute',
+        value: function _setAttribute(element, prop, attrs) {
+            if (attrs[prop] !== undefined && attrs[prop] !== null) {
+                if (prop.charAt(0) === '$') {
+                    element[prop] = attrs[prop];
+                } else {
+                    element.element.setAttribute(prop, El.isArray(attrs[prop]) ? attrs[prop].join(' ') : attrs[prop]);
+                }
+            }
         }
     }]);
     return El;

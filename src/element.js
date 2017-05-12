@@ -177,12 +177,24 @@ class El {
 
         for (const prop in attrs) {
             if (attrs.hasOwnProperty(prop)) {
-                if (attrs[prop] !== undefined && attrs[prop] !== null) {
-                    this.element.setAttribute(prop, El.isArray(attrs[prop]) ? attrs[prop].join(' ') : attrs[prop]);
-                }
+                El._setAttribute(this, prop, attrs);
             }
         }
 
+    }
+
+    /**
+     * Sets an attribute
+     * @private
+     */
+    static _setAttribute(element, prop, attrs) {
+        if (attrs[prop] !== undefined && attrs[prop] !== null) {
+            if (prop.charAt(0) === '$') {
+                element[prop] = attrs[prop];
+            } else {
+                element.element.setAttribute(prop, El.isArray(attrs[prop]) ? attrs[prop].join(' ') : attrs[prop]);
+            }
+        }
     }
 
     /**
@@ -199,7 +211,7 @@ class El {
             this.append(child);
             if (!tracker[child.type]) tracker[child.type] = [];
             tracker[child.type].push(child.type);
-            child._key = child.getAttribute('id') || `${child.type}${tracker[child.type].length - 1}`;
+            child._key = child.attributes._key || child.getAttribute('id') || `${child.type}${tracker[child.type].length - 1}`;
             this[child._key] = child;
         }
 

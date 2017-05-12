@@ -72,19 +72,24 @@ const mydiv = new El('div#mydiv', {
 
 #### Object traversal ####
 
-Child elements are accessible through their parents by traversing the created object. Items are bound by their id, if one exists. If not, the item will named with the tag name followed by the index (See example below).
+Child elements are accessible through their parents by traversing the created object. Items are bound by a *_key* property. This can be assigned by setting the *_key* in the attributes parameter (2nd). If the _key is not present, the element's ID will be used. If no id exists, the item will named with the tag name followed by the index (See example below).
 
 ```javascript
 const myList = new El('ul#myul', [
-    new El('li#item1').setText('List item 1'),
+    new El('li#item1', {
+        _key: 'firstitem',
+    }).setText('List item 1'),
     new El('li#item2').setText('List item 2'),
     new El('li#item3').setText('List item 3'),
 ]);
 
-// If an ID exists
-myList.item2.hide();
+// If a _key is assigned
+myList.firstitem.hide();
 
-// If no ID is assigned.
+// If an ID exists, but no _key is assigned
+myList.item1.hide();
+
+// If neither a _key or id is assigned
 myList.li1.hide();
 ```
 

@@ -18,9 +18,15 @@
 
         window.el = new El('div#myid', [
             new El('h1#myh1').setText('My List'),
-            new El('ul', [
-                new El('li').setText('Item 1'),
-                new El('li').setText('Item 2'),
+            new El('ul', {
+                _key: 'mylist',
+            }, [
+                new El('li', {
+                    _key: 'item1',
+                }).setText('Item 1'),
+                new El('li', {
+                    _key: 'item2',
+                }).setText('Item 2'),
             ]),
         ]);
 

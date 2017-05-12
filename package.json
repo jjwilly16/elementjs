@@ -1,6 +1,6 @@
 {
   "name": "elementjs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Build and interact with html elements easily with javascript.",
   "main": "./dist/element.js",
   "scripts": {
@@ -14,6 +14,14 @@
     "virtual"
   ],
   "author": "Justin Williamson <jwilliamson@ibidata.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jjwilly16/elementjs"
+  },
+  "bugs": {
+    "url": "https://github.com/jjwilly16/elementjs/issues"
+  },
+  "homepage": "https://jjwilly16.github.io/elementjs/",
   "license": "MIT",
   "devDependencies": {
     "babel-plugin-external-helpers": "^6.18.0",
