@@ -189,7 +189,7 @@ class El {
      */
     static _setAttribute(element, prop, attrs) {
         if (attrs[prop] !== undefined && attrs[prop] !== null) {
-            if (prop.charAt(0) === '$') {
+            if (prop === '_key') {
                 element[prop] = attrs[prop];
             } else {
                 element.element.setAttribute(prop, El.isArray(attrs[prop]) ? attrs[prop].join(' ') : attrs[prop]);
